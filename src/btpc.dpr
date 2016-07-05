@@ -3,7 +3,7 @@
  ******************************************************************************
  *   A self-hosting capable tiny pascal compiler for the Win32 x86 platform   *
  ******************************************************************************
- *                        Version 2016-06-22-00-00-0000                       *
+ *                        Version 2016-06-22-18-07-0000                       *
  ******************************************************************************
  *                                zlib license                                *
  *============================================================================*
@@ -307,7 +307,7 @@ begin
    Write('">" expected');
   end;
   TokGEq:begin
-   Write('">)" expected');
+   Write('">=" expected');
   end;
   TokLParent:begin
    Write('"(" expected');
@@ -749,7 +749,7 @@ begin
   if CurrentChar='*' then begin
    ReadChar;
    LastChar:='-';
-   while not ((CurrentChar=')') and (LastChar='*')) do begin
+   while (CurrentChar<>#0) and not ((CurrentChar=')') and (LastChar='*')) do begin
     LastChar:=CurrentChar;
     ReadChar;
    end;
@@ -777,11 +777,21 @@ begin
   ReadChar;
   CurrentSymbol:=TokSemi;
  end else if CurrentChar='{' then begin
-  while CurrentChar<>'}' do begin
+  while (CurrentChar<>'}') and (CurrentChar<>#0) do begin
    ReadChar;
   end;
   ReadChar;
   GetSymbol;
+ end else if CurrentChar='/' then begin
+  ReadChar;
+  if CurrentChar='/' then begin
+   repeat
+    ReadChar;
+   until (CurrentChar=#10) or (CurrentChar=#0);
+   GetSymbol;
+  end else begin
+   Error(102);
+  end;
  end else begin
   Error(102);
  end;
